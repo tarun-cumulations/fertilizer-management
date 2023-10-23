@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Display Products</title>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h2>All Products</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product Category</th>
+                    <th>Technical Name</th>
+                    <th>Trade Name</th>
+                    <th>Brand</th>
+                    <th>Pack Quantity</th>
+                    <th>Firm</th>
+                    <th>Invoice Cost</th>
+                    <th>Phone Number</th>
+                    <th>Pincode</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.productCategory.name %></td>
+                    <td><%= product.technicalName.name %></td>
+                    <td><%= product.tradeName.name %></td>
+                    <td><%= product.brandName.name %></td>
+                    <td><%= product.packQuantity.quantity %> <%= product.packQuantity.unit %></td>
+                    <td><%= product.firm.name %></td>
+                    <td><%= product.invoiceCost %></td>
+                    <td><%= product.firm.mobileNumber %></td> 
+                    <td><%= product.firm.pincode %></td>
+                    <td><a href="/editProduct/<%= product._id %>" class="btn btn-warning">Edit</a></td>
+                    <td><a href="/deleteProduct/<%= product._id %>" class="btn btn-danger">Delete</a></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <a href="/home" class="btn btn-secondary mt-3">Back to Home</a>
+    </div>
+
+</body>
+
+</html>
