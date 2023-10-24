@@ -78,6 +78,7 @@
     
     <div class="container mt-5">
         <h2>All Products</h2>
+        
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -110,9 +111,16 @@
                 <% }) %>
             </tbody>
         </table>
-
+        <button class="btn btn-info mt-3" onclick="downloadExcel()">Download Excel</button>
         <a href="/home" class="btn btn-secondary mt-3">Back to Home</a>
     </div>
+
+    <script>
+        function downloadExcel() {
+            // This will make a GET request to the /downloadExcel endpoint
+            window.location.href = '/downloadExcel';
+        }
+    </script>
 
 </body>
 
