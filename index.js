@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-
+const ExcelJS = require('exceljs');
 const app = express();
 const PORT = 3000;
 
@@ -340,6 +340,59 @@ app.get('/displayProducts', async (req, res) => {
     res.status(500).send("Internal server error");
   }
 });
+
+app.get('/downloadExcel', async (req, res) => {
+  try {
+      // Fetching all products along with their references
+      const products = await Product.find()
+          .populate('productCategory')
+          .populate('technicalName')
+          .populate('tradeName')
+          .populate('brandName')
+          .populate('packQuantity')
+          .populate('firm');
+
+      let workbook = new ExcelJS.Workbook();
+      let worksheet = workbook.addWorksheet('Products');
+
+      // Setting up the columns for the Excel sheet
+      worksheet.columns = [
+          { header: 'Product Category', key: 'productCategory', width: 25 },
+          { header: 'Technical Name', key: 'technicalName', width: 25 },
+          { header: 'Trade Name', key: 'tradeName', width: 25 },
+          { header: 'Brand Name', key: 'brandName', width: 25 },
+          { header: 'Pack Quantity', key: 'packQuantity', width: 25 },
+          { header: 'Firm', key: 'firm', width: 25 },
+          { header: 'Invoice Cost', key: 'invoiceCost', width: 25 },
+      ];
+
+      // Filling in the rows for the Excel sheet
+      products.forEach(product => {
+          worksheet.addRow({
+              productCategory: product.productCategory.name,
+              technicalName: product.technicalName.name,
+              tradeName: product.tradeName.name,
+              brandName: product.brandName.name,
+              packQuantity: product.packQuantity.quantity,
+              firm: product.firm.name,
+              invoiceCost: product.invoiceCost
+          });
+      });
+
+      // Setting headers for the Excel file download
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=products.xlsx');
+
+      // Writing the workbook to the response
+      await workbook.xlsx.write(res);
+      res.end();
+
+  } catch (error) {
+      console.error('Error downloading Excel:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.get('/searchProducts', async (req, res) => {
   try {
