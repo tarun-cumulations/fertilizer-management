@@ -396,34 +396,26 @@ app.get('/downloadExcel', async (req, res) => {
 
 app.get('/searchProducts', async (req, res) => {
   try {
-    const queryObj = {};
+    const productCategoryId = req.query.productCategory;
+      const technicalNameId = req.query.technicalName;
+      const tradeNameId = req.query.tradeName;
+      const brandNameId = req.query.brandName;
 
-      if (req.query.productCategory) {
-          queryObj.productCategory = req.query.productCategory;
-      }
-      if (req.query.technicalName) {
-          queryObj.technicalName = req.query.technicalName;
-      }
-      if (req.query.tradeName) {
-          queryObj.tradeName = req.query.tradeName;
-      }
-      if (req.query.brandName) {
-          queryObj.brandName = req.query.brandName;
-      }
-      if (req.query.packQuantity) {
-          queryObj.packQuantity = req.query.packQuantity;
-      }
-      if (req.query.firm) {
-          queryObj.firm = req.query.firm;
-      }
+      // 2. Construct the search criteria object based on the provided query parameters
+      let searchCriteria = {};
+      if (productCategoryId) searchCriteria.productCategory = productCategoryId;
+      if (technicalNameId) searchCriteria.technicalName = technicalNameId;
+      if (tradeNameId) searchCriteria.tradeName = tradeNameId;
+      if (brandNameId) searchCriteria.brandName = brandNameId;
 
-      const products = await Product.find(queryObj)
+      // 3. Using the constructed search criteria to query the main Product schema
+      const products = await Product.find(searchCriteria)
       .populate('productCategory')
-      .populate('technicalName')
-      .populate('tradeName')
-      .populate('brandName')
-      .populate('packQuantity')
-      .populate('firm');
+            .populate('technicalName')
+            .populate('tradeName')
+            .populate('brandName')
+            .populate('packQuantity')
+            .populate('firm');
 
 
       const product = await Product.findById(req.params.id).populate('productCategory technicalName tradeName brandName packQuantity firm');
@@ -435,7 +427,7 @@ app.get('/searchProducts', async (req, res) => {
         const packQuantities = await PackQuantity.find();
         const firms = await Firm.find();
       
-      console.log(products);
+      
       res.render('display2', { products , productCategories,
         technicalNames,
         tradeNames,
