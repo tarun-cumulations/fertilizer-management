@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Display Products</title>
+</head>
+
+<body>
+
+    <form action="/searchProducts" method="get">
+        <div class="container mt-5">
+        <div class="form-group col-md-4">
+            <h3>SELECT THE CRITERIA AND SEARCH</h3>
+            <hr>
+            <label>Product Category:</label>
+            <select name="productCategory" class="form-control">
+                <% productCategories.forEach(category => { %>
+                    <option value="<%= category._id %>"><%= category.name %></option>
+                <% }) %>
+            </select>
+        </div>
+    
+        <div class="form-group col-md-4">
+            <label>Technical Name:</label>
+            <select name="technicalName" class="form-control">
+                <% technicalNames.forEach(name => { %>
+                    <option value="<%= name._id %>"><%= name.name %></option>
+                <% }) %>
+            </select>
+        </div>
+    
+        <div class="form-group col-md-4">
+            <label>Trade Name:</label>
+            <select name="tradeName" class="form-control">
+                <% tradeNames.forEach(name => { %>
+                    <option value="<%= name._id %>"><%= name.name %></option>
+                <% }) %>
+            </select>
+        </div>
+    
+        <div class="form-group col-md-4">
+            <label>Brand Name:</label>
+            <select name="brandName" class="form-control">
+                <% brandNames.forEach(brand => { %>
+                    <option value="<%= brand._id %>"><%= brand.name %></option>
+                <% }) %>
+            </select>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="pincode">Pincode:</label>
+            <input type="text" class="form-control" name="pincode" placeholder="Enter Pincode">
+        </div>
+
+        <div class="form-group col-md-4">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    
+        
+    </form>
+    </div>
+    
+    <div class="container mt-5">
+        <h2>All Products</h2>
+        <hr>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product Category</th>
+                    <th>Technical Name</th>
+                    <th>Trade Name</th>
+                    <th>Brand</th>
+                    <th>Pack Quantity</th>
+                    <th>Firm</th>
+                    <th>Invoice Cost</th>
+                    <th>Phone Number</th>
+                    <th>Pincode</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.productCategory.name %></td>
+                    <td><%= product.technicalName.name %></td>
+                    <td><%= product.tradeName.name %></td>
+                    <td><%= product.brandName.name %></td>
+                    <td><%= product.packQuantity.quantity %> <%= product.packQuantity.unit %></td>
+                    <td><%= product.firm.name %></td>
+                    <td><%= product.invoiceCost %></td>
+                    <td><%= product.firm.mobileNumber %></td> 
+                    <td><%= product.pincode %></td>
+                    <td><a href="/editProduct/<%= product._id %>" class="btn btn-warning">Edit</a></td>
+                    <td><a href="/deleteProduct/<%= product._id %>" class="btn btn-danger">Delete</a></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <button class="btn btn-info mt-3" onclick="downloadExcel()">Download Excel</button>
+        <a href="/home" class="btn btn-secondary mt-3">Back to Home</a>
+    </div>
+
+    <script>
+        function downloadExcel() {
+            // This will make a GET request to the /downloadExcel endpoint
+            window.location.href = '/downloadExcel';
+        }
+    </script>
+
+</body>
+
+</html>

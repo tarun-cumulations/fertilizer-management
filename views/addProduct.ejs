@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">ADD PRODUCT</a>
+    <span class="navbar-text ml-auto">
+        Welcome
+    </span>
+    <a href="/logout" class="btn btn-danger ml-3">Logout</a>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="form-group col-md-4">
+        <h3>Add Product</h3>
+        <hr>
+    </div>
+    
+    
+    <form action="/addProduct" method="post">
+        <div class="form-group col-md-4">
+            <label for="productCategory">Product Category:</label>
+            <select class="form-control" id="productCategory" name="productCategory">
+                <% productCategories.forEach(category => { %>
+                    <option value="<%= category._id %>"><%= category.name %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <!-- Dropdown for Technical Names -->
+        <div class="form-group col-md-4">
+            <label for="technicalName">Technical Name:</label>
+            <select class="form-control" id="technicalName" name="technicalName">
+                <% technicalNames.forEach(name => { %>
+                    <option value="<%= name._id %>"><%= name.name %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <!-- Dropdown for Trade Names -->
+        <div class="form-group col-md-4">
+            <label for="tradeName">Trade Name:</label>
+            <select class="form-control" id="tradeName" name="tradeName">
+                <% tradeNames.forEach(name => { %>
+                    <option value="<%= name._id %>"><%= name.name %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <!-- Dropdown for Brand Names -->
+        <div class="form-group col-md-4">
+            <label for="brandName">Brand:</label>
+            <select class="form-control" id="brandName" name="brandName">
+                <% brandNames.forEach(brand => { %>
+                    <option value="<%= brand._id %>"><%= brand.name %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <!-- Dropdown for Pack Quantities -->
+        <div class="form-group col-md-4">
+            <label for="packQuantity">Pack Quantity:</label>
+            <select class="form-control" id="packQuantity" name="packQuantity">
+                <% packQuantities.forEach(pack => { %>
+                    <option value="<%= pack._id %>"><%= pack.quantity %> <%= pack.unit %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <!-- Dropdown for Firms -->
+        <div class="form-group col-md-4">
+            <label for="firm">Firm:</label>
+            <select class="form-control" id="firm" name="firm">
+                <% firms.forEach(firm => { %>
+                    <option value="<%= firm._id %>"><%= firm.name %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="invoiceCost">Invoice Cost:</label>
+            <input type="number" class="form-control" id="invoiceCost" name="invoiceCost" placeholder="Enter invoice cost" required>
+        </div>
+
+        <!-- <div class="form-group">
+            <label for="pincode">Pincode:</label>
+            <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Enter pincode" required>
+        </div> -->
+
+        <div class="form-group col-md-4">
+            <label for="pincode">Pincode:</label>
+            <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Enter pincode" required>
+        </div>
+
+        <div class="form-group col-md-4">
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </div>
+
+        <div class="form-group col-md-4">
+            <a href="/home?username=<%= username %>" class="btn btn-secondary mt-4">Back to Home</a>
+        </div>
+        
+    </form>
+    
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
