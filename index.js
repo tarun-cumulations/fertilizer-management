@@ -127,6 +127,20 @@ app.post('/addFirm', async (req, res) => {
   res.redirect('home');
 });
 
+adminSchema.methods.changePassword = function(oldPassword, newPassword) {
+  // Check if oldPassword matches the current password
+  if (oldPassword !== this.password) {
+      throw new Error('Old password does not match.');
+  }
+
+  // Set the new password
+  this.password = newPassword;
+
+  // Save the updated admin document
+  return this.save();
+};
+
+
 app.post('/addBrand', async (req, res) => {
   const brand = new Brand({ name: req.body.name });
   await brand.save();
@@ -189,6 +203,32 @@ app.get('/addFirmPage', (req, res) => {
 app.get('/addBrandPage', (req, res) => {
   const username = req.query.username;
   res.render('addBrand', { username });
+});
+
+app.get('/change-password', (req, res) => {
+  res.render('change-password');
+});
+
+app.post('/change-password', async (req, res) => {
+  try {
+      const { username, oldPassword, newPassword } = req.body;
+      const admin = await Admin.findOne({ username: username });
+
+      if(!admin) {
+          return res.status(400).send('Username not found');
+      }
+
+      //await admin.changePassword(oldPassword, newPassword);
+
+      if (oldPassword !== admin.password) {
+        throw new Error('Old password does not match.');
+      }
+      admin.password = newPassword;
+      admin.save();
+      res.render('home',{username});
+  } catch (error) {
+      res.status(400).send(error.message);
+  }
 });
 
 app.get('/addProductPage', async (req, res) => {
@@ -266,7 +306,35 @@ app.get('/displayProducts', async (req, res) => {
 
       console.log(products)
 
-    res.render('displayProducts', { username, products });
+      
+        const product = await Product.findById(req.params.id).populate('productCategory technicalName tradeName brandName packQuantity firm');
+      
+        const productCategories = await ProductCategory.find();
+        const technicalNames = await TechnicalName.find();
+        const tradeNames = await TradeName.find();
+        const brandNames = await Brand.find();
+        const packQuantities = await PackQuantity.find();
+        const firms = await Firm.find();
+  
+        // res.render('editProduct', {
+        //     product,
+        //     productCategories,
+        //     technicalNames,
+        //     tradeNames,
+        //     brandNames,
+        //     packQuantities,
+        //     firms
+        // });
+
+
+        res.render('display2', { username, products , productCategories,
+          technicalNames,
+          tradeNames,
+          brandNames,
+          packQuantities,
+          firms});
+
+    
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).send("Internal server error");
@@ -275,33 +343,52 @@ app.get('/displayProducts', async (req, res) => {
 
 app.get('/searchProducts', async (req, res) => {
   try {
-      const searchTerm = req.query.search;
-      const searchRegex = new RegExp(searchTerm, 'i');
+    const queryObj = {};
 
-      // 1. Fetch the IDs from referenced schemas based on search term
-      const tradeNameIds = (await TradeName.find({ name: { $regex: searchRegex } })).map(tn => tn._id);
-      const brandNameIds = (await Brand.find({ name: { $regex: searchRegex } })).map(brand => brand._id);
-      const technicalNameIds = (await TechnicalName.find({ name: { $regex: searchRegex } })).map(tn => tn._id);
-      const firmIds = (await Firm.find({ name: { $regex: searchRegex } })).map(firm => firm._id);
+      if (req.query.productCategory) {
+          queryObj.productCategory = req.query.productCategory;
+      }
+      if (req.query.technicalName) {
+          queryObj.technicalName = req.query.technicalName;
+      }
+      if (req.query.tradeName) {
+          queryObj.tradeName = req.query.tradeName;
+      }
+      if (req.query.brandName) {
+          queryObj.brandName = req.query.brandName;
+      }
+      if (req.query.packQuantity) {
+          queryObj.packQuantity = req.query.packQuantity;
+      }
+      if (req.query.firm) {
+          queryObj.firm = req.query.firm;
+      }
 
-      // 2. Using the obtained IDs to search the main Product schema
-      const products = await Product.find({
-          $or: [
-              { tradeName: { $in: tradeNameIds } },
-              { brandName: { $in: brandNameIds } },
-              { technicalName: { $in: technicalNameIds } },
-              { firm: { $in: firmIds } }
-          ]
-      })
+      const products = await Product.find(queryObj)
       .populate('productCategory')
       .populate('technicalName')
       .populate('tradeName')
       .populate('brandName')
       .populate('packQuantity')
       .populate('firm');
+
+
+      const product = await Product.findById(req.params.id).populate('productCategory technicalName tradeName brandName packQuantity firm');
+      
+        const productCategories = await ProductCategory.find();
+        const technicalNames = await TechnicalName.find();
+        const tradeNames = await TradeName.find();
+        const brandNames = await Brand.find();
+        const packQuantities = await PackQuantity.find();
+        const firms = await Firm.find();
       
       console.log(products);
-      res.render('displayProducts', { products });  // change this as per your requirement (e.g., rendering, sending JSON, etc.)
+      res.render('display2', { products , productCategories,
+        technicalNames,
+        tradeNames,
+        brandNames,
+        packQuantities,
+        firms });  // change this as per your requirement (e.g., rendering, sending JSON, etc.)
 
   } catch (error) {
       console.error('Error fetching products:', error);
