@@ -10,15 +10,23 @@
 
 
 <div class="container mt-5">
-    <a href="/home?username=<%= username %>" class="btn btn-secondary mt-4">Back to Home</a>
-    <h3>Add Brand</h3>
-    <hr>
+
+    <div class="form-group col-md-4">
+        <a href="/home?username=<%= username %>" class="btn btn-secondary mt-4">Back to Home</a>
+        <h3>Add Brand</h3>
+        <hr>
+    </div>
+    
     <form action="/addBrand" method="post">
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="name">Brand Name:</label>
             <input type="text" class="form-control" id="name" name="name" required>
         </div>
-        <button type="submit" class="btn btn-primary">Add Brand</button>
+
+        <div class="form-group col-md-4">
+            <button type="submit" class="btn btn-primary">Add Brand</button>
+        </div>
+        
     </form>
     
 </div>

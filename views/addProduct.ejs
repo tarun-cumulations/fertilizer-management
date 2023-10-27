@@ -17,10 +17,15 @@
 </nav>
 
 <div class="container mt-5">
-    <h3>Add Product</h3>
-    <hr>
+
+    <div class="form-group col-md-4">
+        <h3>Add Product</h3>
+        <hr>
+    </div>
+    
+    
     <form action="/addProduct" method="post">
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="productCategory">Product Category:</label>
             <select class="form-control" id="productCategory" name="productCategory">
                 <% productCategories.forEach(category => { %>
@@ -30,7 +35,7 @@
         </div>
 
         <!-- Dropdown for Technical Names -->
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="technicalName">Technical Name:</label>
             <select class="form-control" id="technicalName" name="technicalName">
                 <% technicalNames.forEach(name => { %>
@@ -40,7 +45,7 @@
         </div>
 
         <!-- Dropdown for Trade Names -->
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="tradeName">Trade Name:</label>
             <select class="form-control" id="tradeName" name="tradeName">
                 <% tradeNames.forEach(name => { %>
@@ -50,7 +55,7 @@
         </div>
 
         <!-- Dropdown for Brand Names -->
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="brandName">Brand:</label>
             <select class="form-control" id="brandName" name="brandName">
                 <% brandNames.forEach(brand => { %>
@@ -60,7 +65,7 @@
         </div>
 
         <!-- Dropdown for Pack Quantities -->
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="packQuantity">Pack Quantity:</label>
             <select class="form-control" id="packQuantity" name="packQuantity">
                 <% packQuantities.forEach(pack => { %>
@@ -70,7 +75,7 @@
         </div>
 
         <!-- Dropdown for Firms -->
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="firm">Firm:</label>
             <select class="form-control" id="firm" name="firm">
                 <% firms.forEach(firm => { %>
@@ -79,14 +84,43 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group col-md-4">
             <label for="invoiceCost">Invoice Cost:</label>
             <input type="number" class="form-control" id="invoiceCost" name="invoiceCost" placeholder="Enter invoice cost" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Add Product</button>
+        <!-- <div class="form-group">
+            <label for="pincode">Pincode:</label>
+            <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Enter pincode" required>
+        </div> -->
+
+        <div class="form-group col-md-4">
+            <label for="pincode">Pincode:</label>
+            <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Enter pincode" required>
+        </div>
+
+        <!-- Farmer's Price Field -->
+        <div class="form-group col-md-4">
+            <label for="farmersPrice">Farmer's Price:</label>
+            <input type="number" class="form-control" id="farmersPrice" name="farmersPrice" placeholder="Enter farmer's price" required>
+        </div>
+
+        <!-- MRP Field -->
+        <div class="form-group col-md-4">
+            <label for="mrp">MRP:</label>
+            <input type="number" class="form-control" id="mrp" name="mrp" placeholder="Enter MRP" required>
+        </div>
+
+        <div class="form-group col-md-4">
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </div>
+
+        <div class="form-group col-md-4">
+            <a href="/home?username=<%= username %>" class="btn btn-secondary mt-4">Back to Home</a>
+        </div>
+        
     </form>
-    <a href="/home?username=<%= username %>" class="btn btn-secondary mt-4">Back to Home</a>
+    
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

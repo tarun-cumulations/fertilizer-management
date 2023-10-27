@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-
+const ExcelJS = require('exceljs');
 const app = express();
 const PORT = 3000;
 
@@ -62,8 +62,13 @@ const ProductSchema = new mongoose.Schema({
   brandName: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand' },
   packQuantity: { type: mongoose.Schema.Types.ObjectId, ref: 'PackQuantity' },
   firm: { type: mongoose.Schema.Types.ObjectId, ref: 'Firm' },
-  invoiceCost: Number
+  invoiceCost: Number,
+  pincode: Number,
+  farmersPrice: Number,  
+  mrp: Number
 });
+
+
 
 const Product = mongoose.model('Product', ProductSchema);
 
@@ -253,6 +258,25 @@ app.get('/addProductPage', async (req, res) => {
 });
 
 
+// app.post('/addProduct', async (req, res) => {
+//   try {
+//     const product = new Product({
+//       productCategory: req.body.productCategory,
+//       technicalName: req.body.technicalName,
+//       tradeName: req.body.tradeName,
+//       brandName: req.body.brandName,
+//       packQuantity: req.body.packQuantity,
+//       firm: req.body.firm,
+//       invoiceCost: req.body.invoiceCost,
+//       pincode: req.body.pincode  
+//     });
+//     let username = ''
+//     await product.save();
+//     res.render('home',{username});
+//   } catch (error) {
+//     res.status(500).send('An error occurred while adding the product.');
+//   }
+// });
 app.post('/addProduct', async (req, res) => {
   try {
     const product = new Product({
@@ -262,7 +286,10 @@ app.post('/addProduct', async (req, res) => {
       brandName: req.body.brandName,
       packQuantity: req.body.packQuantity,
       firm: req.body.firm,
-      invoiceCost: req.body.invoiceCost
+      invoiceCost: req.body.invoiceCost,
+      pincode: req.body.pincode,
+      farmersPrice: req.body.farmersPrice,  // Add this
+      mrp: req.body.mrp  // And this
     });
     let username = ''
     await product.save();
@@ -341,60 +368,160 @@ app.get('/displayProducts', async (req, res) => {
   }
 });
 
-app.get('/searchProducts', async (req, res) => {
+app.get('/downloadExcel', async (req, res) => {
   try {
-    const queryObj = {};
+      // Fetching all products along with their references
+      const products = await Product.find()
+          .populate('productCategory')
+          .populate('technicalName')
+          .populate('tradeName')
+          .populate('brandName')
+          .populate('packQuantity')
+          .populate('firm');
 
-      if (req.query.productCategory) {
-          queryObj.productCategory = req.query.productCategory;
-      }
-      if (req.query.technicalName) {
-          queryObj.technicalName = req.query.technicalName;
-      }
-      if (req.query.tradeName) {
-          queryObj.tradeName = req.query.tradeName;
-      }
-      if (req.query.brandName) {
-          queryObj.brandName = req.query.brandName;
-      }
-      if (req.query.packQuantity) {
-          queryObj.packQuantity = req.query.packQuantity;
-      }
-      if (req.query.firm) {
-          queryObj.firm = req.query.firm;
-      }
+      let workbook = new ExcelJS.Workbook();
+      let worksheet = workbook.addWorksheet('Products');
 
-      const products = await Product.find(queryObj)
-      .populate('productCategory')
-      .populate('technicalName')
-      .populate('tradeName')
-      .populate('brandName')
-      .populate('packQuantity')
-      .populate('firm');
+      // Setting up the columns for the Excel sheet
+      worksheet.columns = [
+          { header: 'Product Category', key: 'productCategory', width: 25 },
+          { header: 'Technical Name', key: 'technicalName', width: 25 },
+          { header: 'Trade Name', key: 'tradeName', width: 25 },
+          { header: 'Brand Name', key: 'brandName', width: 25 },
+          { header: 'Pack Quantity', key: 'packQuantity', width: 25 },
+          { header: 'Firm', key: 'firm', width: 25 },
+          { header: 'Invoice Cost', key: 'invoiceCost', width: 25 },
+      ];
 
+      // Filling in the rows for the Excel sheet
+      products.forEach(product => {
+          worksheet.addRow({
+              productCategory: product.productCategory.name,
+              technicalName: product.technicalName.name,
+              tradeName: product.tradeName.name,
+              brandName: product.brandName.name,
+              packQuantity: product.packQuantity.quantity,
+              firm: product.firm.name,
+              invoiceCost: product.invoiceCost
+          });
+      });
 
-      const product = await Product.findById(req.params.id).populate('productCategory technicalName tradeName brandName packQuantity firm');
-      
-        const productCategories = await ProductCategory.find();
-        const technicalNames = await TechnicalName.find();
-        const tradeNames = await TradeName.find();
-        const brandNames = await Brand.find();
-        const packQuantities = await PackQuantity.find();
-        const firms = await Firm.find();
-      
-      console.log(products);
-      res.render('display2', { products , productCategories,
-        technicalNames,
-        tradeNames,
-        brandNames,
-        packQuantities,
-        firms });  // change this as per your requirement (e.g., rendering, sending JSON, etc.)
+      // Setting headers for the Excel file download
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=products.xlsx');
+
+      // Writing the workbook to the response
+      await workbook.xlsx.write(res);
+      res.end();
 
   } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error downloading Excel:', error);
       res.status(500).send('Internal Server Error');
   }
 });
+
+app.get('/searchProducts', async (req, res) => {
+  try {
+    const productCategoryId = req.query.productCategory;
+    const technicalNameId = req.query.technicalName;
+    const tradeNameId = req.query.tradeName;
+    const brandNameId = req.query.brandName;
+    const pincode = req.query.pincode;  // Step 1: Get pincode from query parameters
+    const farmersPrice = req.query.farmersPrice;
+    const mrp = req.query.mrp;
+
+    // Add farmersPrice and MRP to search criteria if provided
+   
+    // 2. Construct the search criteria object based on the provided query parameters
+    let searchCriteria = {};
+    if (productCategoryId) searchCriteria.productCategory = productCategoryId;
+    if (technicalNameId) searchCriteria.technicalName = technicalNameId;
+    if (tradeNameId) searchCriteria.tradeName = tradeNameId;
+    if (brandNameId) searchCriteria.brandName = brandNameId;
+    if (pincode) searchCriteria.pincode = pincode;  // Step 2: Add pincode to search criteria if provided
+    if (farmersPrice) searchCriteria.farmersPrice = farmersPrice;  
+    if (mrp) searchCriteria.mrp = mrp;
+    // 3. Using the constructed search criteria to query the main Product schema
+    const products = await Product.find(searchCriteria)
+    .populate('productCategory')
+    .populate('technicalName')
+    .populate('tradeName')
+    .populate('brandName')
+    .populate('packQuantity')
+    .populate('firm');
+
+    const product = await Product.findById(req.params.id)
+    .populate('productCategory technicalName tradeName brandName packQuantity firm');
+    
+    const productCategories = await ProductCategory.find();
+    const technicalNames = await TechnicalName.find();
+    const tradeNames = await TradeName.find();
+    const brandNames = await Brand.find();
+    const packQuantities = await PackQuantity.find();
+    const firms = await Firm.find();
+    
+    res.render('display2', {
+      products, 
+      productCategories,
+      technicalNames,
+      tradeNames,
+      brandNames,
+      packQuantities,
+      firms
+    });
+
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// app.get('/searchProducts', async (req, res) => {
+//   try {
+//     const productCategoryId = req.query.productCategory;
+//       const technicalNameId = req.query.technicalName;
+//       const tradeNameId = req.query.tradeName;
+//       const brandNameId = req.query.brandName;
+
+//       // 2. Construct the search criteria object based on the provided query parameters
+//       let searchCriteria = {};
+//       if (productCategoryId) searchCriteria.productCategory = productCategoryId;
+//       if (technicalNameId) searchCriteria.technicalName = technicalNameId;
+//       if (tradeNameId) searchCriteria.tradeName = tradeNameId;
+//       if (brandNameId) searchCriteria.brandName = brandNameId;
+
+//       // 3. Using the constructed search criteria to query the main Product schema
+//       const products = await Product.find(searchCriteria)
+//       .populate('productCategory')
+//             .populate('technicalName')
+//             .populate('tradeName')
+//             .populate('brandName')
+//             .populate('packQuantity')
+//             .populate('firm');
+
+
+//       const product = await Product.findById(req.params.id).populate('productCategory technicalName tradeName brandName packQuantity firm');
+      
+//         const productCategories = await ProductCategory.find();
+//         const technicalNames = await TechnicalName.find();
+//         const tradeNames = await TradeName.find();
+//         const brandNames = await Brand.find();
+//         const packQuantities = await PackQuantity.find();
+//         const firms = await Firm.find();
+      
+      
+//       res.render('display2', { products , productCategories,
+//         technicalNames,
+//         tradeNames,
+//         brandNames,
+//         packQuantities,
+//         firms });  // change this as per your requirement (e.g., rendering, sending JSON, etc.)
+
+//   } catch (error) {
+//       console.error('Error fetching products:', error);
+//       res.status(500).send('Internal Server Error');
+//   }
+// });
 
 // app.get('/searchProducts', async (req, res) => {
 //   try {

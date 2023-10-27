@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fertilizers | Admin Dashboard</title>
+    <title>Inventory | Admin Dashboard</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -16,7 +16,7 @@
     </nav> -->
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Fertilizer Inventory Management</a>
+        <a class="navbar-brand" href="#">Inventory Management</a>
         <span class="navbar-text ml-auto">
             Welcome, <%= username %>
         </span>
@@ -26,7 +26,7 @@
     
 
     <div class="container mt-5">
-        <h2>ADD STOCK DETAILS</h2>
+        <h2>ADD DETAILS</h2>
         <hr>
         <div class="mb-4">
             <a href="/addProductCategoryPage?username=<%= username %>" class="btn btn-primary">Add Product Category</a>
@@ -48,13 +48,13 @@
         </div>
        
         <hr>
-        <h2>ADD PRODUCT DETAILS</h2>
+        <h2> ADD PRODUCT</h2>
 
         <a href="/addProductPage" class="btn btn-info">Add Product</a>
 
         <hr>
 
-        <h2>DISPLAY/MODIFY/SEARCH PRODUCTS</h2>
+        <h2>SEARCH PRODUCTS</h2>
 
         <a href="/displayProducts" class="btn btn-warning mt-3">Display All Products</a>
 
